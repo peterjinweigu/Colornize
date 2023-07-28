@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('./partials/head.ejs') %>
+
+<body>
+    <h1>Room ID: <%= code %></h1>
+    <p>Share the URL to invite your friends.</p>
+    <br>
+    <div class="d-flex">
+        <div>
+            <section id="user-list">
+                <h2>Players</h2>
+            </section>
+            <br>
+            <button id="start-game" type="button" class="btn btn-primary" disabled>Start Game</button>
+        </div>
+        <div>
+            <canvas id="canvas" width="600" height="400"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+    <script type="module" src="room.js"></script>
+</body>
+
+</html>
