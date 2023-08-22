@@ -1,2 +1,2 @@
-# Colornize
+# Colornize.io
 Update in the future.
