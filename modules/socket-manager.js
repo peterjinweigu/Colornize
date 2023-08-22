@@ -42,8 +42,8 @@ class SocketManager {
         });
 
         socket.on("keydown", key => {
-            if (!room.inGame) return;
-            
+            if (!room || !room.inGame) return;
+
             let player = user.player;
             // console.log('keydown', id, key);
             if (key === 'w') player.moveUp();
@@ -53,7 +53,7 @@ class SocketManager {
         });
         
         socket.on("keyup", key => {
-            if (!room.inGame) return;
+            if (!room || !room.inGame) return;
 
             let player = user.player;
             // console.log('up', id, key);
