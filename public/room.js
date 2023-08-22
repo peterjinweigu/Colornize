@@ -37,10 +37,11 @@ for (let i = 0; i < gridSize; i++) {
     }
 }
 
-// ------=====--- Update Lobbies -------------------//
+// --------------- Update Lobbies -------------------//
 
 var temp = undefined;
 
+// updates player list periodically (socket ids)
 socket.on("lobbyState", users => {
     // algorithm to update player list
     let index = 0;
@@ -87,10 +88,10 @@ startGame.addEventListener('click', ()=>{
 })
 
 socket.on('startGame', () =>{
-    // console.log('start');
     animate();
 });
 
+// periodically update gamestate
 socket.on('gameState', users => {
     inGame = true;
     userGameObjects = users;
@@ -118,8 +119,7 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-
-
+// User Input
 function keyDown(e) {
     if (!inGame) return;
     if (e.shiftKey || e.ctrlKey) return;
@@ -140,5 +140,12 @@ function keyUp(e) {
     }
 }
 
+// You make this peter! Send click information to server.
+function mouseDown(e) {
+
+}
+
 document.addEventListener('keydown', keyDown);
 document.addEventListener('keyup', keyUp);
+
+// add a listener for the mouse peter
