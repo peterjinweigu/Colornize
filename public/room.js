@@ -98,11 +98,24 @@ socket.on('gameState', users => {
 });
 
 function drawGrid() {
-    for (let i = 0; i < gridSize; i++) {
-        for (let j = 0; j < gridSize; j++) {
-            grid[i][j].draw(ctx, offset);
+    // assume all grids are squares for now
+    // renders tiles by order of manhattan distance from (0, 0)
+    for (let sum = 0; sum < 2*gridSize-1; sum++) {
+        for (let row = Math.max(0, sum-gridSize+1); row < Math.min(sum+1, gridSize); row++) {
+            let col = sum-row;
+            grid[row][col].draw(ctx, offset);
         }
     }
+}
+
+// for testing
+window.idle = function(i, j) {
+    grid[i][j].animationStatus = IsometricTile.animationStatus.IDLE;
+    grid[i][j].animationCounter = 0;
+}
+
+window.fall = function(i, j) {
+    grid[i][j].animationStatus = IsometricTile.animationStatus.FALLING;
 }
 
 function animate() {
