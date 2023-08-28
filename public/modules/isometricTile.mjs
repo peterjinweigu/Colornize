@@ -17,7 +17,22 @@ export class IsometricTile {
     colour;
     active;
 
-    constructor(row, col, size, gridSize, colour) {
+    // stuff from edison
+    static animationStatus = {
+        IDLE: 1,
+        FALLING: 2,
+    }
+
+    row;
+    col;
+    size;
+    gridSize;
+    selected;
+    depth;
+    animationStatus;
+    animationCounter;
+
+    constructor(row, col, size, gridSize) {
         this.row = row;
         this.col = col;
         this.size = size;
@@ -25,6 +40,9 @@ export class IsometricTile {
         this.selected = false;
         this.colour = colour;
         this.active = true;
+        this.depth = 0;
+        this.animationStatus = IsometricTile.animationStatus.IDLE;
+        this.animationCounter = 0;
     }
 
     select() {  
@@ -34,9 +52,27 @@ export class IsometricTile {
         this.selected = false;
     }
     draw(ctx, offset) {
+
+        // handle animations
+
+        if (this.animationStatus == IsometricTile.animationStatus.FALLING) {
+            if (this.animationCounter == 50) {
+                this.depth = 0;
+                return;
+            }
+            this.depth = 50 * this.animationCounter / 50;
+            ctx.globalAlpha = 1 - this.animationCounter / 50;
+            this.animationCounter++;
+        }
+
+        // draw tile
+
         let r = this.row;
         let c = this.col;
         let sz = this.size;
+
+        // vertical shift
+        offset = offset.add(coord(0, this.depth));
 
         let c0 = coord(c*sz, r*sz).toIsometric().add(offset);
         let c1 = coord(c*sz+sz, r*sz).toIsometric().add(offset);
@@ -60,7 +96,7 @@ export class IsometricTile {
 
         // Bottom edge tiles
         let height = coord(0, IsometricTile.tileHeight);
-        if (this.row == this.gridSize - 1) {
+        // if (this.row == this.gridSize - 1) {
             drawPolygon(
                 ctx,
                 [c3, c2, c2.add(height), c3.add(height)],
@@ -68,8 +104,8 @@ export class IsometricTile {
                 IsometricTile.strokeColour,
                 "#478eff"
             );
-        }
-        if (this.col == this.gridSize - 1) {
+        // }
+        // if (this.col == this.gridSize - 1) {
             drawPolygon(
                 ctx,
                 [c2, c1, c1.add(height), c2.add(height)],
@@ -77,7 +113,9 @@ export class IsometricTile {
                 IsometricTile.strokeColour,
                 "#5e9af4"
             );
-        }
+        // }
+
+        ctx.globalAlpha = 1;
     }
     drawText(ctx, offset) {
         let r = this.row;
