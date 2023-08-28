@@ -46,6 +46,7 @@ class SocketManager {
 
             let player = user.player;
             // console.log('keydown', id, key);
+
             if (key === 'w') player.moveUp();
             else if (key === 'a') player.moveLeft();
             else if (key === 's') player.moveDown();
@@ -62,6 +63,16 @@ class SocketManager {
             else if (key === 's') player.moveUp();
             else if (key === 'd') player.moveLeft();
         });
+
+        // For clicks that come 
+        socket.on('mousedown', (x, y) => {
+            if (!room || !room.inGame) return;
+
+            let player = user.player;
+            // should i bring grid in??
+
+            room.manageTileClick(x, y, player.getColour());
+        })
     }
 }
 

@@ -29,11 +29,13 @@ const gridSize = 4;
 const tileSize = 60;
 const offset = coord(canvas.width/2, (canvas.height - tileSize * gridSize - IsometricTile.tileHeight)/2);
 
+let selectedTile;
+
 // Init Grid
 for (let i = 0; i < gridSize; i++) {
     grid[i] = [];
     for (let j = 0; j < gridSize; j++) {
-        grid[i][j] = new IsometricTile(i, j, tileSize, gridSize);
+        grid[i][j] = new IsometricTile(i, j, tileSize, gridSize, 1);
     }
 }
 
@@ -92,15 +94,25 @@ socket.on('startGame', () =>{
 });
 
 // periodically update gamestate
-socket.on('gameState', users => {
+// also added grid being transmitted
+socket.on('gameState', (users, tempGrid) => {
     inGame = true;
     userGameObjects = users;
+
+    // not sure if i should put this here, maybe abstract a bit?
+
+    for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+            grid[i][j].active = tempGrid.grid[i][j].life;
+        }
+    }
 });
+
 
 function drawGrid() {
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
-            grid[i][j].draw(ctx, offset);
+            if (grid[i][j].active) grid[i][j].draw(ctx, offset);
         }
     }
 }
@@ -118,6 +130,31 @@ function animate() {
     }
     requestAnimationFrame(animate);
 }
+
+function hoverTile(r, c) {
+    if (selectedTile) {
+        grid[selectedTile.x][selectedTile.y].deselect();
+        // topDownGrid[selectedTile.x][selectedTile.y].deselect();
+    }
+    if (0 <= r && r < gridSize && 0 <= c && c < gridSize) {
+        grid[r][c].select();
+        selectedTile = coord(r, c);
+    }
+    else {
+        selectedTile = null;
+    }
+}
+
+
+// Obsolete
+// function getGridClick(x, y) {
+//     for (let i = 0; i < gridSize; i++) {
+//         for (let j = 0; j < gridSize; j++) {
+//             if (grid[i][j].checkCollision(x, y, offset)) return [i, j];
+//         }
+//     }
+//     return [-1, -1];
+// }
 
 // User Input
 function keyDown(e) {
@@ -140,12 +177,23 @@ function keyUp(e) {
     }
 }
 
-// You make this peter! Send click information to server.
 function mouseDown(e) {
+    if (!inGame) return;
+    
+    // Edison out here like quake inverse square root algo
+    let mousePos = coord(e.offsetX, e.offsetY).subtract(offset).toCartesian().scale(1/tileSize).toInt();
 
+    if (mousePos.x >= 0 && mousePos.x < gridSize && mousePos.y >= 0 && mousePos.y < gridSize) {
+        socket.emit('mousedown', mousePos.y, mousePos.x);
+    }
+}
+
+function mouseMove(e) {
+    let mousePos = coord(e.offsetX, e.offsetY).subtract(offset).toCartesian().scale(1/tileSize).toInt();
+    hoverTile(mousePos.y, mousePos.x);
 }
 
 document.addEventListener('keydown', keyDown);
 document.addEventListener('keyup', keyUp);
-
-// add a listener for the mouse peter
+document.addEventListener('mousedown', mouseDown);
+document.addEventListener('mousemove', mouseMove);

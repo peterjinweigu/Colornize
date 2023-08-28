@@ -1,5 +1,6 @@
 const User = require('./user');
 const Player = require('./player');
+const Grid = require('./grid');
 
 class Room {
     static #REFRESH_RATE = 50;
@@ -9,6 +10,10 @@ class Room {
     users = []; // 1st player is the host
     interval;
     inGame;
+
+    // Grid in room?
+    grid;
+
     constructor(io, code) {
         Room.io = io;
         this.code = code;
@@ -43,9 +48,14 @@ class Room {
         return this.users.length;
     }
     startGame() {
+        // console.log("WTF");
+
         if (this.getSize() != 2) return false;
-        this.users[0].player = new Player(0.5*60, 3.5*60, 2);
-        this.users[1].player = new Player(3.5*60, 0.5*60, 2);
+        this.users[0].player = new Player(0.5*60, 3.5*60, 2, 1);
+        this.users[1].player = new Player(3.5*60, 0.5*60, 2, 2);
+
+        // instatiate grid :\
+        if (this.getSize() == 2) this.grid = new Grid(4);
 
         clearInterval(this.interval);
         
@@ -64,15 +74,41 @@ class Room {
             Room.io.to(this.code).emit('lobbyState', this.users);
         }, Room.#REFRESH_RATE);
     }
+
+    manageGrid() {
+        this.grid.updateGrid(Room.#FRAME_RATE);
+    }
+
+    manageTileClick(x, y, col) {
+        if (this.grid.grid[x][y].colour == col) {
+            this.grid.grid[x][y].active = false;
+        } // not a fan
+    }
+
+    manageTileMove(x, y, col) {
+        if (this.grid.grid[x][y].colour != col) {
+            this.grid.grid[x][y].active = false;
+        } // not a fan
+    }
+
     gameLoop() {
         return setInterval(()=>{
             this.users.forEach(user => {
                 let player = user.player;
                 let newPos = player.pos.add(player.calcVelIsometric());
                 if (newPos.x >= 0 && newPos.x <= 4*60) player.moveX();
-                if (newPos.y >= 0 && newPos.y <= 4*60) player.moveY();
+                if (newPos.y >= 0 && newPos.y <= 4*60) player.moveY();  
+                
+                if (player.pos.x && player.pos.y) {
+
+                    // Math round for now
+                    // console.log(player.pos.x/60, player.pos.y/60)
+                    this.manageTileMove(Math.floor(player.pos.y/60), Math.floor(player.pos.x/60), player.getColour());
+
+                }
             })   
-            Room.io.to(this.code).emit('gameState', this.users);
+            this.manageGrid();
+            Room.io.to(this.code).emit('gameState', this.users, this.grid);
         }, Room.#FRAME_RATE);
     }
 }

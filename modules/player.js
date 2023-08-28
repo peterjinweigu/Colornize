@@ -1,12 +1,21 @@
 const { Coord, coord } = require('./coord.js');
 
 class Player {
-    constructor(x, y, speed) {
+
+    speed;
+    pos;
+    vel;
+    moveState;
+    colour;
+
+    constructor(x, y, speed, colour) {
         this.speed = speed;
         this.pos = coord(x, y);
         this.vel = coord(0, 0);
         this.moveState = coord(0, 0);
+        this.colour = colour;
     }
+    
     moveRight() {
         this.moveState.x = Math.min(this.moveState.x + 1,  1);
     }
@@ -32,6 +41,9 @@ class Player {
     calcVelIsometric() {
         this.vel = this.moveState.toCartesian().getUnitVector().scale(this.speed);
         return this.vel;
+    }
+    getColour() {
+        return this.colour;
     }
 }
 

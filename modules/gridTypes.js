@@ -1,3 +1,10 @@
+const Grid = require('./grid')
+
+// ||||||||||
+// || NOTE ||  
+// ||||||||||
+
+// I will leave this here, but I am not sure if we really need it
 class GridType {
     size;
     grid;
@@ -9,14 +16,8 @@ class GridType {
 
 // 0 = neutral, [1-9] = colour
 const twoPlayerDiagonal5 = new GridType(
-    5,
-    [
-        [0, 2, 2, 2, 2],
-        [1, 0, 2, 2, 2],
-        [1, 1, 0, 2, 2],
-        [1, 1, 1, 0, 2],
-        [1, 1, 1, 1, 0],
-    ]
+    4,
+    new Grid(4)
 );
 
 module.exports = {
