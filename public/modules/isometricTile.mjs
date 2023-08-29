@@ -32,7 +32,7 @@ export class IsometricTile {
     animationStatus;
     animationCounter;
 
-    constructor(row, col, size, gridSize) {
+    constructor(row, col, size, gridSize, colour) {
         this.row = row;
         this.col = col;
         this.size = size;
@@ -79,7 +79,7 @@ export class IsometricTile {
         let c2 = coord(c*sz+sz, r*sz+sz).toIsometric().add(offset);
         let c3 = coord(c*sz, r*sz+sz).toIsometric().add(offset);
 
-        console.log(this.gridSize);
+        // console.log(this.gridSize);
 
         if (this.selected) {
             drawPolygon(ctx, [c0, c1, c2, c3], IsometricTile.strokeWidth, IsometricTile.strokeColour, IsometricTile.selectColour);
