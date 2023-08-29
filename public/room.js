@@ -11,6 +11,15 @@ const urlParams = new URLSearchParams(window.location.search);
 const roomCode = urlParams.get('g');
 socket.emit("joinRoom", roomCode);
 
+// Handle room issues
+socket.on('failedToJoinRoom', ()=>{
+    // send another get request to the room
+    // This handles bugs involving duplicate tabs since duplicated tabs don't make get requests.
+    window.location.replace(window.location.search);
+})
+
+
+
 // update lobby state
 let userObjects = []; // id for now
 let userElements = []; // element on the page
