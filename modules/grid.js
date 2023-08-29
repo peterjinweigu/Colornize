@@ -12,7 +12,7 @@ class Grid {
         for (let i = 0; i < size; i++) {
             this.grid[i] = [];
             for (let j = 0; j < size; j++) {
-                this.grid[i][j] = new Tile(1);
+                this.grid[i][j] = new Tile(0);
             }
         }
     }

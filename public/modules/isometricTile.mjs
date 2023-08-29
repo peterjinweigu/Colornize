@@ -32,7 +32,7 @@ export class IsometricTile {
     animationStatus;
     animationCounter;
 
-    constructor(row, col, size, gridSize) {
+    constructor(row, col, size, gridSize, colour) {
         this.row = row;
         this.col = col;
         this.size = size;
