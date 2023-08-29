@@ -4,15 +4,26 @@ class Grid {
     grid;
     size;
 
-    constructor(size) {
-        // idk wtf is going on anymore
-        this.size = size;
-        this.grid = [];
+    // for testing, will remove later
+    // constructor(size) {
+    //     this.size = size;
+    //     this.grid = [];
 
-        for (let i = 0; i < size; i++) {
+    //     for (let i = 0; i < size; i++) {
+    //         this.grid[i] = [];
+    //         for (let j = 0; j < size; j++) {
+    //             this.grid[i][j] = new Tile(1);
+    //         }
+    //     }
+    // }
+
+    constructor(gridType) {
+        this.size = gridType.size;
+        this.grid = [];
+        for (let i = 0; i < this.size; i++) {
             this.grid[i] = [];
-            for (let j = 0; j < size; j++) {
-                this.grid[i][j] = new Tile(0);
+            for (let j = 0; j < this.size; j++) {
+                this.grid[i][j] = new Tile(gridType.grid[i][j]);
             }
         }
     }

@@ -21,7 +21,10 @@ class SocketManager {
         console.log('connect', id, new Date().toLocaleTimeString());
 
         socket.on('joinRoom', code => {
-            if (!SocketManager.serverManager.joinRoom(code, user)) return;
+            if (!SocketManager.serverManager.joinRoom(code, user)) {
+                socket.emit('failedToJoinRoom');
+                return;
+            }
 
             roomCode = code;
             room = SocketManager.serverManager.getRoom(code);

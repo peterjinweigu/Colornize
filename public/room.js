@@ -11,6 +11,15 @@ const urlParams = new URLSearchParams(window.location.search);
 const roomCode = urlParams.get('g');
 socket.emit("joinRoom", roomCode);
 
+// Handle room issues
+socket.on('failedToJoinRoom', ()=>{
+    // send another get request to the room
+    // This handles bugs involving duplicate tabs since duplicated tabs don't make get requests.
+    window.location.replace(window.location.search);
+})
+
+
+
 // update lobby state
 let userObjects = []; // id for now
 let userElements = []; // element on the page
@@ -25,7 +34,7 @@ const ctx = canvas.getContext('2d');
 const grid = [];
 let userGameObjects = [];
 
-const gridSize = 4;
+const gridSize = 5;
 const tileSize = 60;
 const offset = coord(canvas.width/2, (canvas.height - tileSize * gridSize - IsometricTile.tileHeight)/2);
 
@@ -118,6 +127,7 @@ socket.on('gameState', (users, tempGrid) => {
 
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
+            grid[i][j].colour = tempGrid.grid[i][j].colour;
             grid[i][j].active = tempGrid.grid[i][j].life;
             if (!grid[i][j].active) grid[i][j].animationStatus = IsometricTile.animationStatus.FALLING;
         }
