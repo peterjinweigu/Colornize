@@ -1,6 +1,7 @@
 const User = require('./user');
 const Player = require('./player');
 const Grid = require('./grid');
+const gridTypes = require('./gridTypes');
 
 class Room {
     static #REFRESH_RATE = 50;
@@ -55,7 +56,8 @@ class Room {
         this.users[1].player = new Player(3.5*60, 0.5*60, 2, 2);
 
         // instatiate grid :\
-        if (this.getSize() == 2) this.grid = new Grid(4);
+        // if (this.getSize() == 2) this.grid = new Grid(4);
+        if (this.getSize() == 2) this.grid = new Grid(gridTypes[0]);
 
         clearInterval(this.interval);
         

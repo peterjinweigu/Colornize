@@ -1,25 +1,29 @@
 const Grid = require('./grid')
+const assert = require('assert');
 
-// ||||||||||
-// || NOTE ||  
-// ||||||||||
-
-// I will leave this here, but I am not sure if we really need it
 class GridType {
     size;
     grid;
-    constructor(size, grid) {
-        this.size = size;
+    constructor(grid) {
+        this.size = grid.length;
         this.grid = grid;
+        for (let i = 0; i < this.size; i++) {
+            assert(grid[i].length == this.size);
+        }
     }
 }
 
 // 0 = neutral, [1-9] = colour
 const twoPlayerDiagonal5 = new GridType(
-    4,
-    new Grid(4)
+    [
+        [0, 2, 2, 2, 2],
+        [1, 0, 2, 2, 2],
+        [1, 1, 0, 2, 2],
+        [1, 1, 1, 0, 2],
+        [1, 1, 1, 1, 0],
+    ]
 );
 
-module.exports = {
+module.exports = [
     twoPlayerDiagonal5,
-}
+]

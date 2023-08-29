@@ -1,17 +1,11 @@
 import { coord } from './coord.mjs';
 import { drawPolygon } from './canvaTools.mjs';
+import { tileColours } from './tileColours.mjs';
 
 export class IsometricTile {
     // Constants
     static tileHeight = 25;
     static strokeWidth = 1;
-    static strokeColour = 'blue';
-    static fillColour = '#74c2ff';
-    static selectColour = '#aadcff';
-
-    // down horrendus (testing)
-    static colour1 = '#FF0000';
-    static colour2 = '#0000FF';
 
     // temp stuff for inkjoy
     colour;
@@ -81,28 +75,27 @@ export class IsometricTile {
 
         // console.log(this.gridSize);
 
+        let strokeColour = tileColours[this.colour].strokeColour;
+        let selectColour = tileColours[this.colour].selectColour;
+        let fillColour = tileColours[this.colour].fillColour;
+
         if (this.selected) {
-            drawPolygon(ctx, [c0, c1, c2, c3], IsometricTile.strokeWidth, IsometricTile.strokeColour, IsometricTile.selectColour);
+            drawPolygon(ctx, [c0, c1, c2, c3], IsometricTile.strokeWidth, strokeColour, selectColour);
         } else {
-            // testing 
-            if (this.colour == 0) {
-                drawPolygon(ctx, [c0, c1, c2, c3], IsometricTile.strokeWidth, IsometricTile.strokeColour, IsometricTile.fillColour); 
-            } else if (this.colour == 1) {
-                drawPolygon(ctx, [c0, c1, c2, c3], IsometricTile.strokeWidth, IsometricTile.strokeColour, IsometricTile.colour1);
-            } else if (this.colour == 2) {
-                drawPolygon(ctx, [c0, c1, c2, c3], IsometricTile.strokeWidth, IsometricTile.strokeColour, IsometricTile.colour2);
-            }
+            drawPolygon(ctx, [c0, c1, c2, c3], IsometricTile.strokeWidth, strokeColour, fillColour); 
         }
 
         // Bottom edge tiles
         let height = coord(0, IsometricTile.tileHeight);
+        let leftShadow = tileColours[this.colour].leftShadow;
+        let rightShadow = tileColours[this.colour].rightShadow;
         // if (this.row == this.gridSize - 1) {
             drawPolygon(
                 ctx,
                 [c3, c2, c2.add(height), c3.add(height)],
                 IsometricTile.strokeWidth,
-                IsometricTile.strokeColour,
-                "#478eff"
+                strokeColour,
+                leftShadow
             );
         // }
         // if (this.col == this.gridSize - 1) {
@@ -110,8 +103,8 @@ export class IsometricTile {
                 ctx,
                 [c2, c1, c1.add(height), c2.add(height)],
                 IsometricTile.strokeWidth,
-                IsometricTile.strokeColour,
-                "#5e9af4"
+                strokeColour,
+                rightShadow
             );
         // }
 

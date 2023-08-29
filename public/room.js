@@ -25,7 +25,7 @@ const ctx = canvas.getContext('2d');
 const grid = [];
 let userGameObjects = [];
 
-const gridSize = 4;
+const gridSize = 5;
 const tileSize = 60;
 const offset = coord(canvas.width/2, (canvas.height - tileSize * gridSize - IsometricTile.tileHeight)/2);
 
@@ -35,7 +35,7 @@ let selectedTile;
 for (let i = 0; i < gridSize; i++) {
     grid[i] = [];
     for (let j = 0; j < gridSize; j++) {
-        grid[i][j] = new IsometricTile(i, j, tileSize, gridSize, 1);
+        grid[i][j] = new IsometricTile(i, j, tileSize, gridSize, 0);
     }
 }
 
@@ -103,6 +103,7 @@ socket.on('gameState', (users, tempGrid) => {
 
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
+            grid[i][j].colour = tempGrid.grid[i][j].colour;
             grid[i][j].active = tempGrid.grid[i][j].life;
         }
     }
