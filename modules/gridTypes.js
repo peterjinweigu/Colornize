@@ -1,15 +1,18 @@
 const Grid = require('./grid')
+const { Coord, coord } = require('./coord.js');
 const assert = require('assert');
 
 class GridType {
     size;
     grid;
-    constructor(grid) {
+    startPositions;
+    constructor(grid, startPositions) {
         this.size = grid.length;
         this.grid = grid;
         for (let i = 0; i < this.size; i++) {
             assert(grid[i].length == this.size);
         }
+        this.startPositions = startPositions;
     }
 }
 
@@ -21,6 +24,10 @@ const twoPlayerDiagonal5 = new GridType(
         [1, 1, 0, 2, 2],
         [1, 1, 1, 0, 2],
         [1, 1, 1, 1, 0],
+    ],
+    [
+        coord(0, 4),
+        coord(4, 0)
     ]
 );
 

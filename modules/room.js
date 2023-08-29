@@ -1,6 +1,7 @@
 const User = require('./user');
 const Player = require('./player');
 const Grid = require('./grid');
+const Tile = require('./tile');
 const gridTypes = require('./gridTypes');
 
 class Room {
@@ -49,15 +50,19 @@ class Room {
         return this.users.length;
     }
     startGame() {
-        // console.log("WTF");
-
         if (this.getSize() != 2) return false;
-        this.users[0].player = new Player(0.5*60, 3.5*60, 2, 1);
-        this.users[1].player = new Player(3.5*60, 0.5*60, 2, 2);
 
-        // instatiate grid :\
-        // if (this.getSize() == 2) this.grid = new Grid(4);
-        if (this.getSize() == 2) this.grid = new Grid(gridTypes[0]);
+        // only 1 grid type for now.
+        this.grid = new Grid(gridTypes[0]);     
+        let startPositions = gridTypes[0].startPositions;
+
+        for (let i = 0; i < this.getSize(); i++) {
+            let pos = startPositions[i].scale(Tile.tileSize);
+            // center player on tile
+            pos.x += Tile.tileSize/2;
+            pos.y += Tile.tileSize/2;
+            this.users[i].player = new Player(pos.x, pos.y, 2, i+1);
+        }
 
         clearInterval(this.interval);
         
@@ -98,15 +103,17 @@ class Room {
             this.users.forEach(user => {
                 let player = user.player;
                 let newPos = player.pos.add(player.calcVelIsometric());
-                if (newPos.x >= 0 && newPos.x <= 4*60) player.moveX();
-                if (newPos.y >= 0 && newPos.y <= 4*60) player.moveY();  
+
+                // edge of map collision
+                if (newPos.x >= 0 && newPos.x <= this.grid.size*Tile.tileSize) player.moveX();
+                if (newPos.y >= 0 && newPos.y <= this.grid.size*Tile.tileSize) player.moveY();  
                 
                 if (player.pos.x && player.pos.y) {
-
-                    // Math round for now
-                    // console.log(player.pos.x/60, player.pos.y/60)
-                    this.manageTileMove(Math.floor(player.pos.y/60), Math.floor(player.pos.x/60), player.getColour());
-
+                    this.manageTileMove(
+                        Math.floor(player.pos.y/Tile.tileSize), 
+                        Math.floor(player.pos.x/Tile.tileSize), 
+                        player.getColour()
+                    );
                 }
             })   
             this.manageGrid();
