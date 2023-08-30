@@ -220,5 +220,5 @@ function mouseMove(e) {
 
 document.addEventListener('keydown', keyDown);
 document.addEventListener('keyup', keyUp);
-document.addEventListener('mousedown', mouseDown);
-document.addEventListener('mousemove', mouseMove);
+canvas.addEventListener('mousedown', mouseDown);
+canvas.addEventListener('mousemove', mouseMove);
