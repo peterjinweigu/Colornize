@@ -1,6 +1,6 @@
 import { coord } from './coord.mjs';
 import { drawPolygon } from './canvaTools.mjs';
-import { tileColours } from './tileColours.mjs';
+import { tileColours } from './colours.mjs';
 
 export class IsometricTile {
     // Constants

@@ -147,7 +147,7 @@ function animate() {
 
     if (inGame) {
         userGameObjects.forEach(user => {
-            let player = new Player(user.player.pos.x, user.player.pos.y);
+            let player = new Player(user.player.pos.x, user.player.pos.y, user.player.colour);
             player.drawIsometric(ctx, offset);
         });
     }

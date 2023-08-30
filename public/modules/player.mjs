@@ -1,19 +1,12 @@
 import {Coord, coord} from './coord.mjs';
+import { playerColours } from './colours.mjs';
 
 export class Player {
-    static fillColour = "#E1E1E1";
-    static strokeColour = "#515151";
-    constructor(x, y) {
+    pos;
+    colour;
+    constructor(x, y, colour) {
         this.pos = coord(x, y);
-    }
-    drawTopDown(ctx, offset) {
-        let location = this.pos.add(offset);
-        ctx.beginPath();
-        ctx.arc(location.x, location.y, 10, 0, Math.PI * 2);
-        ctx.strokeStyle = Player.strokeStyle;
-        ctx.fillStyle = Player.fillColour;
-        ctx.stroke();
-        ctx.fill();
+        this.colour = colour;
     }
     drawIsometric(ctx, offset) {
         let location = this.pos.toIsometric().add(offset);
@@ -30,8 +23,8 @@ export class Player {
         ctx.closePath();
 
         ctx.lineWidth = 1;
-        ctx.strokeStyle = Player.strokeColour;
-        ctx.fillStyle = "#A1A1A1";
+        ctx.strokeStyle = playerColours[this.colour].strokeColour;
+        ctx.fillStyle = playerColours[this.colour].shadowColour;
         ctx.fill();
         ctx.stroke();
 
@@ -39,7 +32,7 @@ export class Player {
         ctx.ellipse(location.x, location.y, 15, 7.5, Math.PI * 2, 0, 2 * Math.PI);
         ctx.closePath();
 
-        ctx.fillStyle = Player.fillColour;
+        ctx.fillStyle = playerColours[this.colour].fillColour;
         ctx.fill();
         ctx.stroke();
     }
