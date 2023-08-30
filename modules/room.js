@@ -7,7 +7,7 @@ const gridTypes = require('./gridTypes');
 class Room {
     static #REFRESH_RATE = 50;
     static #FRAME_RATE = 10;
-    static #GAMEOVER = 9000;
+    static #GAME_OVER = 9000;
     static io;
     code;
     users = []; // 1st player is the host
@@ -25,7 +25,10 @@ class Room {
         this.code = code;
         this.interval = this.lobbyLoop();
         this.inGame == false;
-        this.gameOverBuffer = Room.#GAMEOVER;
+        this.gameOverBuffer = Room.#GAME_OVER;
+    }
+    destroyLoop() {
+        clearInterval(this.interval);
     }
     addUser(user) {
         // temporary cap on room size
@@ -69,10 +72,10 @@ class Room {
             this.users[i].player = new Player(pos.x, pos.y, 2, i+1);
         }
 
-        clearInterval(this.interval);
+        this.destroyLoop();
         
         this.inGame = true;
-        this.gameOverBuffer = Room.#GAMEOVER;
+        this.gameOverBuffer = Room.#GAME_OVER;
 
         Room.io.to(this.code).emit('startGame');
 
@@ -92,20 +95,20 @@ class Room {
         this.grid.updateGrid(Room.#FRAME_RATE);
     }
 
-    manageTileClick(x, y, col) {
-        if (this.grid.grid[x][y].colour == col) {
-            this.grid.grid[x][y].active = false;
+    manageTileClick(i, j, col) {
+        if (this.grid.grid[i][j].colour == col) {
+            this.grid.grid[i][j].active = false;
         } // not a fan
     }
 
-    manageTileMove(x, y, col) {
-        if (this.grid.grid[x][y].colour != col && this.grid.grid[x][y].colour != 0) {
-            this.grid.grid[x][y].active = false;
+    manageTileMove(i, j, col) {
+        if (this.grid.grid[i][j].colour != col && this.grid.grid[i][j].colour != 0) {
+            this.grid.grid[i][j].active = false;
         } // not a fan
     }
 
-    checkPlayer(x, y) {
-        return (this.grid.grid[x][y].life != 0);
+    checkPlayer(i, j) {
+        return (this.grid.grid[i][j].life != 0);
     }
 
     gameLoop() {
@@ -137,9 +140,16 @@ class Room {
                 if (player.active) userCount++;
             })   
             if (userCount <= 1) this.gameOverBuffer -= Room.#REFRESH_RATE;
-            if (this.gameOverBuffer == 0) this.inGame = false;
+
             this.manageGrid();
             Room.io.to(this.code).emit('gameState', this.users, this.grid, this.inGame);
+            
+            if (this.gameOverBuffer == 0) {
+                this.inGame = false;
+                Room.io.to(this.code).emit('gameOver');
+                this.destroyLoop();
+                return;
+            }
         }, Room.#FRAME_RATE);
     }
 }

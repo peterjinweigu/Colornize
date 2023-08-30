@@ -96,10 +96,16 @@ socket.on("lobbyState", users => {
 // start game
 startGame.addEventListener('click', ()=>{
     socket.emit('startGame');
-})
+});
 
 socket.on('startGame', () =>{
+    startGame.disabled = true;
     animate();
+});
+
+socket.on('gameOver', () => {
+    if (isHost) startGame.removeAttribute('disabled');
+    console.log('Game Over!');
 });
 
 // periodically update gamestate
@@ -114,7 +120,7 @@ socket.on('gameState', (users, tempGrid, newInGame) => {
         for (let j = 0; j < gridSize; j++) {
             grid[i][j].colour = tempGrid.grid[i][j].colour;
             grid[i][j].active = tempGrid.grid[i][j].life;
-            if (!grid[i][j].active) grid[i][j].animationStatus = IsometricTile.animationStatus.FALLING;
+            if (!grid[i][j].active) grid[i][j].fall();
             else grid[i][j].animationStatus = IsometricTile.animationStatus.IDLE;
         }
     }
@@ -132,7 +138,7 @@ function drawGrid() {
     }
 }
 
-// for testing
+// browser inspect element testing methods
 window.idle = function(i, j) {
     grid[i][j].animationStatus = IsometricTile.animationStatus.IDLE;
     grid[i][j].animationCounter = 0;
@@ -141,6 +147,11 @@ window.idle = function(i, j) {
 window.fall = function(i, j) {
     grid[i][j].animationStatus = IsometricTile.animationStatus.FALLING;
 }
+
+window.getGrid = function() {
+    console.log(grid);
+}
+// end of testing
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -160,7 +171,6 @@ function animate() {
 function hoverTile(r, c) {
     if (selectedTile) {
         grid[selectedTile.x][selectedTile.y].deselect();
-        // topDownGrid[selectedTile.x][selectedTile.y].deselect();
     }
     if (0 <= r && r < gridSize && 0 <= c && c < gridSize) {
         grid[r][c].select();

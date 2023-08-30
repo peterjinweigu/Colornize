@@ -45,6 +45,11 @@ export class IsometricTile {
     deselect() {
         this.selected = false;
     }
+    fall() {
+        if (this.animationStatus == IsometricTile.animationStatus.FALLING) return;
+        this.animationCounter = 0;
+        this.animationStatus = IsometricTile.animationStatus.FALLING;
+    }
     draw(ctx, offset) {
 
         // handle animations
