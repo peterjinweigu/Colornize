@@ -64,6 +64,23 @@ class Room {
             this.users[i].player = new Player(pos.x, pos.y, 2, i+1);
         }
 
+        // defintely delete this soon
+        this.grid.grid[1][0].colour = 1;
+        this.grid.grid[2][0].colour = 1;
+        this.grid.grid[2][1].colour = 1;
+        this.grid.grid[3][0].colour = 1;
+        this.grid.grid[3][1].colour = 1;
+        this.grid.grid[3][2].colour = 1;
+
+        this.grid.grid[2][3].colour = 2;
+        this.grid.grid[1][3].colour = 2;
+        this.grid.grid[1][2].colour = 2;
+        this.grid.grid[0][3].colour = 2;
+        this.grid.grid[0][2].colour = 2;
+        this.grid.grid[0][1].colour = 2;
+
+
+
         clearInterval(this.interval);
         
         this.inGame = true;
@@ -93,7 +110,7 @@ class Room {
     }
 
     manageTileMove(x, y, col) {
-        if (this.grid.grid[x][y].colour != col) {
+        if (this.grid.grid[x][y].colour != col && this.grid.grid[x][y].colour != 0) {
             this.grid.grid[x][y].active = false;
         } // not a fan
     }

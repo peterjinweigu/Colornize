@@ -48,6 +48,21 @@ for (let i = 0; i < gridSize; i++) {
     }
 }
 
+// Please delete this
+grid[1][0].colour = 1;
+grid[2][0].colour = 1;
+grid[2][1].colour = 1;
+grid[3][0].colour = 1;
+grid[3][1].colour = 1;
+grid[3][2].colour = 1;
+
+grid[2][3].colour = 2;
+grid[1][3].colour = 2;
+grid[1][2].colour = 2;
+grid[0][3].colour = 2;
+grid[0][2].colour = 2;
+grid[0][1].colour = 2;
+
 // --------------- Update Lobbies -------------------//
 
 var temp = undefined;
@@ -114,6 +129,7 @@ socket.on('gameState', (users, tempGrid) => {
         for (let j = 0; j < gridSize; j++) {
             grid[i][j].colour = tempGrid.grid[i][j].colour;
             grid[i][j].active = tempGrid.grid[i][j].life;
+            if (!grid[i][j].active) grid[i][j].animationStatus = IsometricTile.animationStatus.FALLING;
         }
     }
 });
@@ -125,7 +141,7 @@ function drawGrid() {
     for (let sum = 0; sum < 2*gridSize-1; sum++) {
         for (let row = Math.max(0, sum-gridSize+1); row < Math.min(sum+1, gridSize); row++) {
             let col = sum-row;
-            if (grid[row][col].active) grid[row][col].draw(ctx, offset);
+            grid[row][col].draw(ctx, offset);
         }
     }
 }

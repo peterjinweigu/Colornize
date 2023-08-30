@@ -40,7 +40,7 @@ class SocketManager {
         });
 
         socket.on('startGame', () => {
-            if (!room) return;
+            if (!room || room.inGame) return;
             room.startGame();
         });
 
