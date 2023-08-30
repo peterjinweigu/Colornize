@@ -23,6 +23,8 @@ export class IsometricTile {
     gridSize;
     selected;
     depth;
+    opacity;
+    animation;
     animationStatus;
     animationCounter;
 
@@ -35,6 +37,7 @@ export class IsometricTile {
         this.colour = colour;
         this.active = true;
         this.depth = 0;
+        this.opacity = 1;
         this.animationStatus = IsometricTile.animationStatus.IDLE;
         this.animationCounter = 0;
     }
@@ -46,22 +49,30 @@ export class IsometricTile {
         this.selected = false;
     }
     fall() {
-        if (this.animationStatus == IsometricTile.animationStatus.FALLING) return;
+        if (this.animationStatus == IsometricTile.animationStatus.FALLING) 
+            return;
+        this.opacity = 1;
         this.animationCounter = 0;
         this.animationStatus = IsometricTile.animationStatus.FALLING;
+
+        this.animation = setInterval(()=>{
+            this.depth = 50 * this.animationCounter / 50;
+            this.opacity = 1 - this.animationCounter / 50;
+            this.animationCounter++;
+
+            if (this.animationCounter == 50) {
+                this.depth = 0;
+                this.opacity = 0;
+                clearInterval(this.animation);
+            }
+        }, 25);
     }
     draw(ctx, offset) {
 
         // handle animations
 
         if (this.animationStatus == IsometricTile.animationStatus.FALLING) {
-            if (this.animationCounter == 50) {
-                this.depth = 0;
-                return;
-            }
-            this.depth = 50 * this.animationCounter / 50;
-            ctx.globalAlpha = 1 - this.animationCounter / 50;
-            this.animationCounter++;
+            ctx.globalAlpha = this.opacity;
         }
 
         // draw tile
@@ -125,26 +136,4 @@ export class IsometricTile {
         ctx.fillStyle = 'black';
         ctx.fillText(`(${this.row},${this.col})`, c0.x - 20, c0.y + this.size / 2 + 5);
     }
-
-    // Obsolete
-    // checkCollision(x, y, offset) {
-    //     let r = this.row;
-    //     let c = this.col;
-    //     let sz = this.size;
-
-    //     let c0 = coord(c*sz, r*sz).toIsometric().add(offset);
-    //     let c1 = coord(c*sz+sz, r*sz).toIsometric().add(offset);
-    //     let c2 = coord(c*sz+sz, r*sz+sz).toIsometric().add(offset);
-    //     let c3 = coord(c*sz, r*sz+sz).toIsometric().add(offset);
-
-    //     let xVert = [c0.x, c1.x, c2.x, c3.x];
-    //     let yVert = [c0.y, c1.y, c2.y, c3.y];
-
-    //     xVert.sort();
-    //     yVert.sort();
-
-    //     return (x >= xVert[0] && x <= xVert[3] && y >= yVert[0] && y <= yVert[3]);
-        
-    //     // return (c.x > lX && c.x < rX && c.y > uY && c.y < dY);
-    // }
 }

@@ -40,14 +40,6 @@ const offset = coord(canvas.width/2, (canvas.height - tileSize * gridSize - Isom
 
 let selectedTile;
 
-// Init Grid
-for (let i = 0; i < gridSize; i++) {
-    grid[i] = [];
-    for (let j = 0; j < gridSize; j++) {
-        grid[i][j] = new IsometricTile(i, j, tileSize, gridSize, 0);
-    }
-}
-
 // --------------- Update Lobbies -------------------//
 
 var temp = undefined;
@@ -100,6 +92,13 @@ startGame.addEventListener('click', ()=>{
 
 socket.on('startGame', () =>{
     startGame.disabled = true;
+    // Init Grid
+    for (let i = 0; i < gridSize; i++) {
+        grid[i] = [];
+        for (let j = 0; j < gridSize; j++) {
+            grid[i][j] = new IsometricTile(i, j, tileSize, gridSize, 0);
+        }
+    }
     animate();
 });
 

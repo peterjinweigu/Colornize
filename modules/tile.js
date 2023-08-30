@@ -1,6 +1,6 @@
 class Tile {
     // temporary stuff
-    static tileLife = 300;
+    static tileLife = 200;
     static tileSize = 60; // client side
 
 
