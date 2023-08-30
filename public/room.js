@@ -48,21 +48,6 @@ for (let i = 0; i < gridSize; i++) {
     }
 }
 
-// Please delete this
-grid[1][0].colour = 1;
-grid[2][0].colour = 1;
-grid[2][1].colour = 1;
-grid[3][0].colour = 1;
-grid[3][1].colour = 1;
-grid[3][2].colour = 1;
-
-grid[2][3].colour = 2;
-grid[1][3].colour = 2;
-grid[1][2].colour = 2;
-grid[0][3].colour = 2;
-grid[0][2].colour = 2;
-grid[0][1].colour = 2;
-
 // --------------- Update Lobbies -------------------//
 
 var temp = undefined;
@@ -119,8 +104,8 @@ socket.on('startGame', () =>{
 
 // periodically update gamestate
 // also added grid being transmitted
-socket.on('gameState', (users, tempGrid) => {
-    inGame = true;
+socket.on('gameState', (users, tempGrid, newInGame) => {
+    inGame = newInGame;
     userGameObjects = users;
 
     // not sure if i should put this here, maybe abstract a bit?
@@ -130,6 +115,7 @@ socket.on('gameState', (users, tempGrid) => {
             grid[i][j].colour = tempGrid.grid[i][j].colour;
             grid[i][j].active = tempGrid.grid[i][j].life;
             if (!grid[i][j].active) grid[i][j].animationStatus = IsometricTile.animationStatus.FALLING;
+            else grid[i][j].animationStatus = IsometricTile.animationStatus.IDLE;
         }
     }
 });
@@ -164,7 +150,8 @@ function animate() {
     if (inGame) {
         userGameObjects.forEach(user => {
             let player = new Player(user.player.pos.x, user.player.pos.y);
-            player.drawIsometric(ctx, offset);
+            if (user.player.active) player.drawIsometric(ctx, offset); // ngl this is devious 
+            // have some animation thing here
         });
     }
     requestAnimationFrame(animate);
@@ -183,7 +170,6 @@ function hoverTile(r, c) {
         selectedTile = null;
     }
 }
-
 
 // Obsolete
 // function getGridClick(x, y) {

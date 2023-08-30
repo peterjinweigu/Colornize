@@ -7,6 +7,7 @@ const gridTypes = require('./gridTypes');
 class Room {
     static #REFRESH_RATE = 50;
     static #FRAME_RATE = 10;
+    static #GAMEOVER = 9000;
     static io;
     code;
     users = []; // 1st player is the host
@@ -16,11 +17,15 @@ class Room {
     // Grid in room?
     grid;
 
+    // 
+    gameOverBuffer;
+
     constructor(io, code) {
         Room.io = io;
         this.code = code;
         this.interval = this.lobbyLoop();
         this.inGame == false;
+        this.gameOverBuffer = Room.#GAMEOVER;
     }
     addUser(user) {
         // temporary cap on room size
@@ -64,26 +69,10 @@ class Room {
             this.users[i].player = new Player(pos.x, pos.y, 2, i+1);
         }
 
-        // defintely delete this soon
-        this.grid.grid[1][0].colour = 1;
-        this.grid.grid[2][0].colour = 1;
-        this.grid.grid[2][1].colour = 1;
-        this.grid.grid[3][0].colour = 1;
-        this.grid.grid[3][1].colour = 1;
-        this.grid.grid[3][2].colour = 1;
-
-        this.grid.grid[2][3].colour = 2;
-        this.grid.grid[1][3].colour = 2;
-        this.grid.grid[1][2].colour = 2;
-        this.grid.grid[0][3].colour = 2;
-        this.grid.grid[0][2].colour = 2;
-        this.grid.grid[0][1].colour = 2;
-
-
-
         clearInterval(this.interval);
         
         this.inGame = true;
+        this.gameOverBuffer = Room.#GAMEOVER;
 
         Room.io.to(this.code).emit('startGame');
 
@@ -115,8 +104,13 @@ class Room {
         } // not a fan
     }
 
+    checkPlayer(x, y) {
+        return (this.grid.grid[x][y].life != 0);
+    }
+
     gameLoop() {
         return setInterval(()=>{
+            let userCount = 0;
             this.users.forEach(user => {
                 let player = user.player;
                 let newPos = player.pos.add(player.calcVelIsometric());
@@ -125,16 +119,27 @@ class Room {
                 if (newPos.x >= 0 && newPos.x <= this.grid.size*Tile.tileSize) player.moveX();
                 if (newPos.y >= 0 && newPos.y <= this.grid.size*Tile.tileSize) player.moveY();  
                 
-                if (player.pos.x && player.pos.y) {
+                if (player.pos.x && player.pos.y && player.active) {
+                    let curY = Math.floor(player.pos.y/Tile.tileSize);
+                    let curX = Math.floor(player.pos.x/Tile.tileSize);
+
                     this.manageTileMove(
-                        Math.floor(player.pos.y/Tile.tileSize), 
-                        Math.floor(player.pos.x/Tile.tileSize), 
+                        curY, 
+                        curX, 
                         player.getColour()
                     );
+
+                    if (!this.checkPlayer(curY, curX)) {
+                        player.shutdown();
+                    }
                 }
+
+                if (player.active) userCount++;
             })   
+            if (userCount <= 1) this.gameOverBuffer -= Room.#REFRESH_RATE;
+            if (this.gameOverBuffer == 0) this.inGame = false;
             this.manageGrid();
-            Room.io.to(this.code).emit('gameState', this.users, this.grid);
+            Room.io.to(this.code).emit('gameState', this.users, this.grid, this.inGame);
         }, Room.#FRAME_RATE);
     }
 }

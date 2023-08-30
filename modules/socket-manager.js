@@ -42,6 +42,7 @@ class SocketManager {
         socket.on('startGame', () => {
             if (!room || room.inGame) return;
             room.startGame();
+            console.log("Just checking");
         });
 
         socket.on("keydown", key => {
@@ -74,7 +75,7 @@ class SocketManager {
             let player = user.player;
             // should i bring grid in??
 
-            room.manageTileClick(x, y, player.getColour());
+            if (player.active) room.manageTileClick(x, y, player.getColour());
         })
     }
 }

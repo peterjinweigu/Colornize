@@ -7,6 +7,7 @@ class Player {
     vel;
     moveState;
     colour;
+    active;
 
     constructor(x, y, speed, colour) {
         this.speed = speed;
@@ -14,6 +15,7 @@ class Player {
         this.vel = coord(0, 0);
         this.moveState = coord(0, 0);
         this.colour = colour;
+        this.active = true;
     }
     
     moveRight() {
@@ -44,6 +46,9 @@ class Player {
     }
     getColour() {
         return this.colour;
+    }
+    shutdown() {
+        this.active = false;
     }
 }
 
