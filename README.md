@@ -1,2 +1,2 @@
 # Colornize.io
-Update in the future.
+Browser game inspired by the popular "io" game genre.
