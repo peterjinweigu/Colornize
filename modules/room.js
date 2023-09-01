@@ -7,18 +7,18 @@ const gridTypes = require('./gridTypes');
 class Room {
     static #REFRESH_RATE = 50;
     static #FRAME_RATE = 10;
-    static #GAME_OVER = 9000;
+    static #GAME_OVER = 12000;
     static io;
+
     code;
     users = []; // 1st player is the host
     interval;
     inGame;
-
-    // Grid in room?
     grid;
-
-    // 
     gameOverBuffer;
+    winner;
+
+    // some abstraction could be done lol
 
     constructor(io, code) {
         Room.io = io;
@@ -76,6 +76,7 @@ class Room {
         
         this.inGame = true;
         this.gameOverBuffer = Room.#GAME_OVER;
+        this.winner = "Draw";
 
         Room.io.to(this.code).emit('startGame');
 
@@ -140,13 +141,20 @@ class Room {
                 if (player.active) userCount++;
             })   
             if (userCount <= 1) this.gameOverBuffer -= Room.#REFRESH_RATE;
+            if (userCount == 1) {
+                this.users.forEach(user => {
+                    let player = user.player;
+                    if (player.active) this.winner = user.socketId;
+                })
+            }
 
             this.manageGrid();
             Room.io.to(this.code).emit('gameState', this.users, this.grid, this.inGame);
             
             if (this.gameOverBuffer == 0) {
                 this.inGame = false;
-                Room.io.to(this.code).emit('gameOver');
+                
+                Room.io.to(this.code).emit('gameOver', "User " + this.winner + " is the winner");
                 this.destroyLoop();
                 return;
             }

@@ -18,8 +18,6 @@ socket.on('failedToJoinRoom', ()=>{
     window.location.replace(window.location.search);
 })
 
-
-
 // update lobby state
 let userObjects = []; // id for now
 let userElements = []; // element on the page
@@ -29,6 +27,7 @@ const userListElement = document.getElementById('user-list');
 const startGame = document.getElementById('start-game');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const gameResult = document.getElementById('game-result-display');
 
 // game graphics
 const grid = [];
@@ -92,6 +91,7 @@ startGame.addEventListener('click', ()=>{
 
 socket.on('startGame', () =>{
     startGame.disabled = true;
+
     // Init Grid
     for (let i = 0; i < gridSize; i++) {
         grid[i] = [];
@@ -102,8 +102,9 @@ socket.on('startGame', () =>{
     animate();
 });
 
-socket.on('gameOver', () => {
+socket.on('gameOver', (winner) => {
     if (isHost) startGame.removeAttribute('disabled');
+    gameResult.append(winner);
     console.log('Game Over!');
 });
 
