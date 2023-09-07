@@ -104,7 +104,7 @@ socket.on('startGame', () =>{
 
 socket.on('gameOver', (winner) => {
     if (isHost) startGame.removeAttribute('disabled');
-    gameResult.append(winner);
+    gameResult.innerText = winner;
     console.log('Game Over!');
 });
 
